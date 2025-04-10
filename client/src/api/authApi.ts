@@ -1,30 +1,35 @@
-import { api } from './api';
-import { AuthRequestDto } from './types';
+import { authSliceActions, User } from '@/redux/authSlice'
+import { api } from './api'
+import { AuthRequestDto } from './types'
 
-const signUrl = '/signin';
+const signUrl = 'http://localhost:3001/auth/google'
 
 export const signApi = api.injectEndpoints({
-    endpoints: (builder) => ({
-        signIn: builder.mutation<{ status: 'authorised' }, AuthRequestDto>({
-            query: ({ login, password }) => ({
-                url: `${signUrl}`,
-                method: 'POST',
-                body: {
-                    login,
-                    password,
-                },
-            }),
-            async onQueryStarted(body, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    localStorage.setItem('status', data.status);
-                } catch (error) {
-                    console.log(error);
-                }
-            },
-        }),
+  endpoints: (builder) => ({
+    fetchUser: builder.query<User, void>({
+      query: () => ({
+        url: 'auth/userInfo',
+        method: 'GET',
+        credentials: 'include',
+      }),
     }),
-    overrideExisting: false,
-});
+    logOut: builder.mutation<any, void>({
+      query: () => ({
+        url: `/auth/logout`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+      async onQueryStarted(body, { queryFulfilled, dispatch }) {
+        try {
+          await queryFulfilled
+        } finally {
+          dispatch(authSliceActions.logoutUser())
+          localStorage.removeItem('isAuth')
+        }
+      },
+    }),
+  }),
+  overrideExisting: false,
+})
 
-export const { useSignInMutation } = signApi;
+export const { useLogOutMutation, useFetchUserQuery } = signApi

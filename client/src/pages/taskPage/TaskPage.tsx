@@ -50,7 +50,7 @@ export const TaskPage: React.FC = () => {
 
   const handleDeleteHabits = async (id: string) => {
     try {
-      const fn = await deleteHabit({ id })
+      const fn = await deleteHabit({ id }).unwrap()
       showHertz()
       dispatch(
         habitsApi.util.invalidateTags([
@@ -66,7 +66,7 @@ export const TaskPage: React.FC = () => {
 
   const onSubmit = async (formData: FormInputs) => {
     try {
-      const fn = await createHabit({ title: formData.title })
+      const fn = await createHabit({ title: formData.title }).unwrap()
       showHert2()
       setCurrentPage(0)
       dispatch(

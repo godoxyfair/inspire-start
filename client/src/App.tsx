@@ -5,12 +5,15 @@ import ErrorBoundary from './components/ErrorBoundary'
 import router from './router'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
+import { AuthProvider } from './authProvider/AuthProvider'
 
 const App: React.FC = () => (
   <React.StrictMode>
     <Provider store={store}>
       <ErrorBoundary>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </ErrorBoundary>
     </Provider>
   </React.StrictMode>

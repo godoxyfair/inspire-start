@@ -1,10 +1,17 @@
 import express from "express";
 import cors from "cors";
-import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
+import session from "express-session";
+import habitsRouter from "./routes/habits.js";
+import authRouter from "./auth.js";
+import { ensureAuth } from "./authMiddleware.js";
+import cookieParser from "cookie-parser";
+import passport from "passport";
+
+dotenv.config();
 
 const app = express();
 const port = 3001;
-const prisma = new PrismaClient();
 
 app.use(
   cors({
@@ -14,72 +21,43 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
 
-app.get("/habits", async (req, res) => {
-  const page = parseInt(req.query.page) || 1; // текущая страница
-  const limit = parseInt(req.query.limit) || 10; // сколько привычек на страницу
-  const skip = (page - 1) * limit;
-  // const habits = await prisma.habit.findMany({
-  //   include: { logs: true },
-  // });
-  // res.json(habits);
-  try {
-    const [habits, total] = await Promise.all([
-      prisma.habit.findMany({
-        skip,
-        take: limit,
-        orderBy: { id: "desc" }, // по желанию
-        include: { logs: true },
-      }),
-      prisma.habit.count(),
-    ]);
+app.use(cookieParser());
 
-    res.json({
-      data: habits,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Ошибка при получении привычек" });
-  }
-});
-
-// Создать привычку
-app.post("/habits", async (req, res) => {
-  const { title } = req.body;
-  const habit = await prisma.habit.create({ data: { title } });
-  res.json(habit);
-});
-
-// Удалить привычку
-app.delete("/habits/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const habit = await prisma.habit.delete({
-      where: {
-        id: parseInt(id),
-      },
-    });
-    res.json(habit);
-  } catch (error) {
-    res.status(500).json({ error: "Habit not found or has related logs." });
-  }
-});
-
-// Отметить привычку за день
-app.post("/habits/:id/log", async (req, res) => {
-  const { id } = req.params;
-  const log = await prisma.habitLog.create({
-    data: {
-      habitId: parseInt(id),
-      date: new Date(),
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret", // ключ для подписи сессий
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: false, // true, если https
+      httpOnly: true,
+      sameSite: "lax",
     },
-  });
-  res.json(log);
+  })
+);
+
+app.use(express.json());
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use((req, res, next) => {
+  // Применяем middleware ensureAuth ко всем маршрутам
+  // кроме тех, которые явно исключаем (например, маршруты для аутентификации)
+  if (
+    req.path === "/auth/google" ||
+    req.path === "/auth/google/callback" ||
+    req.path === "/login" // добавь другие маршруты, которые не требуют авторизации
+  ) {
+    return next();
+  }
+
+  // Включаем проверку авторизации для всех остальных маршрутов
+  ensureAuth(req, res, next);
 });
 
+app.use("/habits", habitsRouter);
+app.use(authRouter);
 // app.post('/signin', async (req, res) => {
 //     const { username, password } = req.body;
 

@@ -7,9 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum HabitStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+  ON_HOLD
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  googleId  String  @unique
+  name      String
+  email     String
+  habits    Habit[]
+}
+
 model Habit {
   id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
   title     String
+  status    HabitStatus  @default(TODO)
   createdAt DateTime  @default(now())
   logs      HabitLog[]
 }

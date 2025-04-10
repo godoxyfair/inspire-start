@@ -1,8 +1,13 @@
 import type { PropsWithChildren } from 'react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import styles from './Layout.module.css'
 import { Navigation } from './header/Navigation'
+import { authSliceActions } from '@/redux/authSlice'
+import { useDispatch } from 'react-redux'
+import { Navigate, useNavigate } from 'react-router'
+import { useFetchUserQuery } from '@/api/authApi'
+import { useAppSelector } from '@/redux/hooks/hooks'
 
 const Layout: React.FC<PropsWithChildren> = ({ children, ...rest }) => {
   return (
