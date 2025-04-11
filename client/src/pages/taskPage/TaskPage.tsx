@@ -2,8 +2,9 @@ import {
   useGetHabitsQuery,
   useDeleteHabitMutation,
   habitsApi,
-  useChangeHabitMutation,
+  useCreateHabitMutation,
 } from '@/api/habitsApi'
+import { HabitStatus } from '@/api/types'
 import { Checkbox } from '@/ui-kit/Checkbox/Checkbox'
 import { Player } from '@lottiefiles/react-lottie-player'
 import React, { useEffect, useRef, useState } from 'react'
@@ -29,7 +30,7 @@ export const TaskPage: React.FC = () => {
   })
   const [deleteHabit, { isLoading: deleteLoading }] = useDeleteHabitMutation()
   const [createHabit, { isLoading: createHabitLoading, isSuccess }] =
-    useChangeHabitMutation()
+    useCreateHabitMutation()
 
   const {
     handleSubmit,
@@ -66,7 +67,10 @@ export const TaskPage: React.FC = () => {
 
   const onSubmit = async (formData: FormInputs) => {
     try {
-      const fn = await createHabit({ title: formData.title }).unwrap()
+      const fn = await createHabit({
+        title: formData.title,
+        status: HabitStatus.TODO,
+      }).unwrap()
       showHert2()
       setCurrentPage(0)
       dispatch(
@@ -152,19 +156,21 @@ export const TaskPage: React.FC = () => {
           {habitsData?.data.map((item) => (
             <li
               key={item.id}
-              className="py-[8px] px-[16px] flex items-center gap-2"
+              className="justify-between py-[8px] px-[16px] flex items-center gap-2 min-w-[300px] max-w-[500px]"
             >
-              <div className="w-10 h-10 bg-neutral-500 rounded-full"></div>
-              <div className="flex items-center gap-1.5 max-w-[300px]">
-                <span className="line-clamp-2">{item.title}</span>
-                <Checkbox
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      handleDeleteHabits(item.id)
-                    }
-                  }}
-                />
-              </div>
+              <span className="flex gap-2">
+                <div className="flex-shrink-0 w-10 h-10 bg-neutral-500 rounded-full"></div>
+                <div className="flex items-center">
+                  <span className="line-clamp-2">{item.title}</span>
+                </div>
+              </span>
+              <Checkbox
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    handleDeleteHabits(item.id)
+                  }
+                }}
+              />
             </li>
           ))}
         </ul>

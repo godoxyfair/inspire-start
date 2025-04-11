@@ -1,5 +1,9 @@
 import { api } from './api'
-import { HabitsDTO, HabitsListResponseDTO } from './types'
+import {
+  HabitsCreateRequestDTO,
+  HabitsDTO,
+  HabitsListResponseDTO,
+} from './types'
 const habitsUrl = '/habits'
 
 export const habitsApi = api.injectEndpoints({
@@ -15,7 +19,7 @@ export const habitsApi = api.injectEndpoints({
       providesTags: (result, error) =>
         error ? [] : [{ type: 'HabitsList' }, 'HabitsList'],
     }),
-    changeHabit: builder.mutation<HabitsDTO, { title: string }>({
+    createHabit: builder.mutation<HabitsDTO, HabitsCreateRequestDTO>({
       query: (data) => ({
         url: `${habitsUrl}`,
         method: 'POST',
@@ -36,6 +40,6 @@ export const habitsApi = api.injectEndpoints({
 
 export const {
   useGetHabitsQuery,
-  useChangeHabitMutation,
+  useCreateHabitMutation,
   useDeleteHabitMutation,
 } = habitsApi

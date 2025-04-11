@@ -26,8 +26,12 @@ export const Navigation: React.FC = () => {
       {isAuth ? (
         <ul className="flex gap-2 items-center">
           <li>
-            <a className="btn-custom variant-tab" href="" title="Your Board">
-              Login
+            <a
+              className="btn-custom variant-tab"
+              href="/task"
+              title="Your Board"
+            >
+              Tasks
             </a>
           </li>
           <li>

@@ -39,9 +39,9 @@ router.get("/", async (req, res) => {
 
 // Создать привычку
 router.post("/", async (req, res) => {
-  const { title } = req.body;
+  const { title, status } = req.body;
   const habit = await prisma.habit.create({
-    data: { title, userId: req.user.id },
+    data: { title, status, userId: req.user.id },
   });
   res.json(habit);
 });
