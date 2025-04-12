@@ -16,6 +16,7 @@ import InputComponent from '@/ui-kit/Input/InputComponent'
 import { useForm } from 'react-hook-form'
 import type { Player as LottiePlayer } from '@lottiefiles/react-lottie-player'
 import ReactPaginate from 'react-paginate'
+import { Modal } from '@/ui-kit/Modal/Modal'
 
 type FormInputs = {
   title: string
@@ -122,6 +123,12 @@ export const TaskPage: React.FC = () => {
     }, 800)
   }
 
+  const [modalOpen, setModalOpen] = useState(false)
+
+  const handleOpenModal = () => {
+    setModalOpen((open) => !open)
+  }
+
   return (
     <div className="grid grid-cols-[1fr_1fr] overflow-hidden place-content-center">
       <div className="py-[10px] px-[24px] flex flex-col flex-wrap place-content-center w-full">
@@ -158,18 +165,30 @@ export const TaskPage: React.FC = () => {
               key={item.id}
               className="justify-between py-[8px] px-[16px] flex items-center gap-2 min-w-[300px] max-w-[500px]"
             >
-              <span className="flex gap-2">
+              <span
+                className="flex gap-2 items-center"
+                onClick={handleOpenModal}
+              >
                 <div className="flex-shrink-0 w-10 h-10 bg-neutral-500 rounded-full"></div>
                 <div className="flex items-center">
                   <span className="line-clamp-2">{item.title}</span>
                 </div>
               </span>
+              <Modal
+                title="Edit Task"
+                onClose={handleOpenModal}
+                isOpen={modalOpen}
+              >
+                <div>{item.title}</div>
+                <div>{item.status}</div>
+              </Modal>
               <Checkbox
                 onChange={(e) => {
                   if (e.target.checked) {
                     handleDeleteHabits(item.id)
                   }
                 }}
+                accent
               />
             </li>
           ))}
