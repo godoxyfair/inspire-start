@@ -5,18 +5,14 @@ import {
   useCreateHabitMutation,
 } from '@/api/habitsApi'
 import { HabitStatus } from '@/api/types'
-import { Checkbox } from '@/ui-kit/Checkbox/Checkbox'
-import { Player } from '@lottiefiles/react-lottie-player'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import animationData from './Animation - 1744053915834.json'
-import animationHertz from './Animation - hertz.json'
-import animationHertz2 from './Animation - hertz2.json'
 import InputComponent from '@/ui-kit/Input/InputComponent'
 import { useForm } from 'react-hook-form'
 import type { Player as LottiePlayer } from '@lottiefiles/react-lottie-player'
 import ReactPaginate from 'react-paginate'
-import { Modal } from '@/ui-kit/Modal/Modal'
+import { HabitsListItem } from '@/components/HabitListItem/HabitListItem'
+import { CatAnimation } from '@/components/CatAnimation/CatAnimation'
 
 type FormInputs = {
   title: string
@@ -161,36 +157,11 @@ export const TaskPage: React.FC = () => {
         </form>
         <ul>
           {habitsData?.data.map((item) => (
-            <li
+            <HabitsListItem
               key={item.id}
-              className="justify-between py-[8px] px-[16px] flex items-center gap-2 min-w-[300px] max-w-[500px]"
-            >
-              <span
-                className="flex gap-2 items-center"
-                onClick={handleOpenModal}
-              >
-                <div className="flex-shrink-0 w-10 h-10 bg-neutral-500 rounded-full"></div>
-                <div className="flex items-center">
-                  <span className="line-clamp-2">{item.title}</span>
-                </div>
-              </span>
-              <Modal
-                title="Edit Task"
-                onClose={handleOpenModal}
-                isOpen={modalOpen}
-              >
-                <div>{item.title}</div>
-                <div>{item.status}</div>
-              </Modal>
-              <Checkbox
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    handleDeleteHabits(item.id)
-                  }
-                }}
-                accent
-              />
-            </li>
+              habit={item}
+              onDeleteHabit={handleDeleteHabits}
+            />
           ))}
         </ul>
         {habitsData && (
@@ -201,7 +172,7 @@ export const TaskPage: React.FC = () => {
             onPageChange={handlePageChange}
             pageRangeDisplayed={1}
             marginPagesDisplayed={1}
-            pageCount={habitsData.totalPages} // общее количество страниц
+            pageCount={habitsData.totalPages}
             forcePage={currentPage}
             disabledLinkClassName="bg-neutral-200"
             activeLinkClassName="variant-accent"
@@ -215,24 +186,11 @@ export const TaskPage: React.FC = () => {
           />
         )}
       </div>
-      <div className="relative py-[10px] px-[24px]">
-        {(isShowHertz || isShowHertz2) && (
-          <Player
-            src={isShowHertz2 ? animationHertz2 : animationHertz}
-            autoplay
-            loop
-            style={{ height: '100px', width: '100px' }}
-            className="absolute right-[24px]"
-          />
-        )}
-        <Player
-          ref={catRef}
-          src={animationData}
-          autoplay={false}
-          loop
-          style={{ height: '500px', width: '500px' }}
-        />
-      </div>
+      <CatAnimation
+        catRef={catRef}
+        isShowHertz={isShowHertz}
+        isShowHertz2={isShowHertz2}
+      />
     </div>
   )
 }

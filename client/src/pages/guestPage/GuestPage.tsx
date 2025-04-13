@@ -1,6 +1,6 @@
 import { Player } from '@lottiefiles/react-lottie-player'
 import React, { useEffect, useRef, useState } from 'react'
-import animationData from '../taskPage/Animation - 1744053915834.json'
+import animationData from '../../components/CatAnimation/Animation - 1744053915834.json'
 
 export const GuestPage: React.FC = () => {
   return (
