@@ -6,12 +6,15 @@ export type CheckboxProps = {
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
   label?: string
   disabled?: boolean
+  accent?: boolean
 }
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   ({ disabled = false, onChange, ...props }: CheckboxProps, ref) => {
     return (
-      <label className={`checkbox ${disabled ? 'checkbox--disabled' : ''}`}>
+      <label
+        className={`checkbox ${props.accent && 'checkbox-accent'} ${disabled ? 'checkbox--disabled' : ''}`}
+      >
         <input
           type="checkbox"
           // checked={props.checked}

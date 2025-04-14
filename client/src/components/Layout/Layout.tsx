@@ -19,6 +19,7 @@ const Layout: React.FC<PropsWithChildren> = ({ children, ...rest }) => {
         <Navigation />
       </header>
       <main
+        id="main-layout"
         className="row-start-2 row-end-2 overflow-y-scroll place-content-center"
         {...rest}
       >
