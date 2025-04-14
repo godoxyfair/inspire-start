@@ -62,10 +62,11 @@ export const Modal = ({
         ReactDOM.createPortal(
           <div className="modal-overlay">
             <div className="modal-content">
+              <span>{title}</span>
               <button className="close-button" onClick={onClose}>
                 ✖
               </button>
-              {children}
+              <div className="py-2">{children}</div>
             </div>
           </div>,
           appLayoutElement,
