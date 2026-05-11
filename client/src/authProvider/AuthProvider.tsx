@@ -11,18 +11,18 @@ export const AuthProvider: React.FC<PropsWithChildren> = ({
   const [loading, setLoading] = useState(true)
 
   const checkAuth = async () => {
-    const res = await fetch('http://localhost:3001/auth/userInfo', {
-      credentials: 'include', //отправятся cookie с сессией
-    })
+    try {
+      const res = await fetch('http://localhost:3001/auth/userInfo', {
+        credentials: 'include', //отправятся cookie с сессией
+      })
 
-    if (res.ok) {
-      const user = await res.json()
-      dispatch(authSliceActions.setUser(user))
-      // localStorage.setItem('isAuth', 'isAuth')
-      setLoading(false)
-    } else {
+      if (res.ok) {
+        const user = await res.json()
+        dispatch(authSliceActions.setUser(user))
+        setLoading(false)
+      }
+    } catch (e) {
       dispatch(authSliceActions.logoutUser())
-      // localStorage.removeItem('isAuth')
       setLoading(false)
     }
   }
